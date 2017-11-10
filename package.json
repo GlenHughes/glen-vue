@@ -1,0 +1,12 @@
+{
+  "name": "glen-vue",
+  "version": "1.0.0",
+  "description": "glen vue work",
+  "scripts": {
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "vue": "^2.5.3"
+  }
+}
