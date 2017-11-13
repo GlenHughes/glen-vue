@@ -6,18 +6,21 @@ var gulp = require('gulp'),
     autoPrefixer = require('gulp-autoprefixer'),
     sourceMaps = require('gulp-sourcemaps'),
     cachebust = require('gulp-cachebust'),
-    stripDebug = require('gulp-strip-debug');
+    stripDebug = require('gulp-strip-debug'),
+    babel = require('gulp-babel');
 
 gulp.task('css', function () {
     gulp.src([
-        'css/*.css'])
-        .pipe(sourceMaps.init())
-        .pipe(minifyCss())
+        'node_modules/bootstrap/dist/css/bootstrap.css',
+        'node_modules/font-awesome/css/font-awesome.min.css',
+        'assets/css/*.css'])
+        // .pipe(sourceMaps.init())
         .pipe(autoPrefixer('last 2 versions', 'safari 5', 'ie9'))
         .pipe(concat('style.min.css'))
-        .pipe(cachebust({
-            type: 'timestamp'
-        }))
+        .pipe(minifyCss())
+        // .pipe(cachebust({
+        //     type: 'timestamp'
+        // }))
         .pipe(sourceMaps.write())
         .pipe(gulp.dest('public_html/assets/css'))
 });
@@ -25,15 +28,27 @@ gulp.task('css', function () {
 gulp.task('js', function () {
     gulp.src([
         argv.production ? 'node_modules/vue/dist/vue.min.js' : 'node_modules/vue/dist/vue.js',
+        argv.production ? 'node_modules/jquery/dist/jquery.slim.min.js' : 'node_modules/jquery/dist/jquery.slim.js',
         argv.production ? 'node_modules/axios/dist/axios.min.js' : 'node_modules/axios/dist/axios.js',
+        argv.production ? 'node_modules/bootstrap/dist/bootstrap.min.js' : 'node_modules/bootstrap/dist/bootstrap.js',
         'assets/js/**/*.js'])
         .pipe(concat('app.min.js'))
         // .pipe(stripDebug())
-        .pipe(uglify())
+        .pipe(babel({
+            presets: ['vue']
+        }))
+        // .pipe(uglify())
         // .pipe(cachebust({
         //     type: 'timestamp'
         // }))
         .pipe(gulp.dest('public_html/assets/js'))
 });
 
-gulp.task('default', ['css', 'js']);
+// Fonts
+gulp.task('fonts', function() {
+    return gulp.src([
+        'node_modules/font-awesome/fonts/fontawesome-webfont.*'])
+        .pipe(gulp.dest('public_html/assets/fonts/'));
+});
+
+gulp.task('default', ['fonts', 'css', 'js']);
